@@ -1,50 +1,54 @@
 import { Searchbar } from "./Searchbar/Searchbar";
-import React from "react";
 import { fetchImages } from "./Api/ArticlesApli.js";
 import { LoadMore } from "./LoadMore/LoadMore";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
+import { useState, useEffect } from "react";
 
+export const App = () => {
+  const [images, setImages] = useState([])
+  const [query, setQuery] = useState('')
+  const [totalHits, setTotalHits] = useState('')
+  const [page, setPage] = useState(1)
+  const [isLoading, setIsLoading] = useState(false)
 
-export class App extends React.Component {
-  state = {
-    images: [],
-    query: '',
-    page: 1,
-    totalHits: 0,
-    isLoading: false,
+  const getData = query => {
+    setQuery(query)
+    setPage(1)
+    setImages([])
   }
-  handleSubmitForm = query => {
-    this.setState({ query, page: 1 })
-  }
-  componentDidUpdate(_, prevState) {
-    const { query, page } = this.state
-    if (prevState.query !== query || prevState.page !== page) {
-      this.setState({ isLoading: true })
-      fetchImages(query, page).then(data => {
-        this.setState(prev => ({
-          images: page === 1 ? data.hits : [...prev.images, ...data.hits],
-          totalHits: page === 1 ? data.totalHits - data.hits.length : data.totalHits - [...prev.images, ...data.hits].length,
-        }))
 
-      }).finally(() => { this.setState({ isLoading: false }) })
+  useEffect(() => {
+    const getImageData = async (query, page) => {
+      setIsLoading(true)
+      try {
+        const result = await fetchImages(query, page)
+        setImages(images => [...images, ...result.hits])
+        setTotalHits(result.total)
+      } catch (error) {
+        alert('Something went wrong')
+      }
+      setIsLoading(false)
     }
+
+    if (query !== '') {
+      getImageData(query, page)
+    }
+  }, [query, page])
+
+  const handleLoadMore = () => {
+    setPage(page + 1)
   }
-  handleLoadMore = () => {
-    this.setState(prevState => ({ page: prevState.page + 1 }))
-  }
-  render() {
-    return (
-      <>
-        <Searchbar onSubmit={this.handleSubmitForm} />
-        <ImageGallery images={this.state.images} />
-        {!!this.state.totalHits &&
-          (!this.state.isLoading ?
-            (<LoadMore onLoadMore={this.handleLoadMore} />) :
-            (<Loader />))}
-      </>
-    )
-  }
+  return (
+    <>
+      <Searchbar onSubmit={getData} />
+      <ImageGallery images={images} />
+      {!!totalHits &&
+        (!isLoading ?
+          (<LoadMore onLoadMore={handleLoadMore} />) :
+          (<Loader />))}
+    </>
+  )
 }
 
 
