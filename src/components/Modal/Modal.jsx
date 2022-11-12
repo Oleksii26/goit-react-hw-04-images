@@ -23,10 +23,12 @@ export const Modal = ({ onClose, image, tag }) => {
         if (e.target === e.currentTarget) {
             onClose()
         }
-        return createPortal(<div className='Overlay' onClick={closeByBackdrop}>
-            <div className='Modal' >
-                <img src={image} alt={tag} />
-            </div>
-        </div>, modalRoot)
     }
+
+    return createPortal(<div className='Overlay' onClick={closeByBackdrop}>
+        <div className='Modal' >
+            <img src={image} alt={tag} />
+        </div>
+    </div>, modalRoot)
 }
+
