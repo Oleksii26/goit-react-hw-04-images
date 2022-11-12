@@ -4,6 +4,7 @@ import { LoadMore } from "./LoadMore/LoadMore";
 import { ImageGallery } from "./ImageGallery/ImageGallery";
 import { Loader } from "./Loader/Loader";
 import { useState, useEffect } from "react";
+import { Modal } from "./Modal/Modal";
 
 export const App = () => {
   const [images, setImages] = useState([])
@@ -11,6 +12,9 @@ export const App = () => {
   const [totalHits, setTotalHits] = useState('')
   const [page, setPage] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [modalShow, setModalShow] = useState(false)
+  const [modalImage, setModalImage] = useState('')
+  const [modalTags, setModalTags] = useState('')
 
   const getData = query => {
     setQuery(query)
@@ -36,20 +40,30 @@ export const App = () => {
     }
   }, [query, page])
 
+  const toggleModal = () => {
+    setModalShow(!modalShow)
+  }
+
+  const openModalImg = (url, alt) => {
+    console.log(modalImage)
+    console.log(modalTags)
+    setModalImage(url)
+    setModalTags(alt)
+    toggleModal()
+  }
+
   const handleLoadMore = () => {
     setPage(page + 1)
   }
   return (
     <>
       <Searchbar onSubmit={getData} />
-      <ImageGallery images={images} />
-      {!!totalHits &&
-        (!isLoading ?
-          (<LoadMore onLoadMore={handleLoadMore} />) :
-          (<Loader />))}
+      <ImageGallery images={images} openModalImg={openModalImg} />
+      {!!totalHits && (!isLoading ? (<LoadMore onLoadMore={handleLoadMore} />) : (<Loader />))}
+      {modalShow && (<Modal image={modalImage} tag={modalTags} onClose={toggleModal} />)}
+   
     </>
   )
 }
-
 
 
