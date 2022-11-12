@@ -1,6 +1,3 @@
-import { Modal } from "components/Modal/Modal"
-import { useState } from "react"
-
 
 export const ImageGalleryItem = ({ onClick, src, alt, largeImageURL }) => {
 
