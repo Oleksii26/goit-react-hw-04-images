@@ -45,8 +45,6 @@ export const App = () => {
   }
 
   const openModalImg = (url, alt) => {
-    console.log(modalImage)
-    console.log(modalTags)
     setModalImage(url)
     setModalTags(alt)
     toggleModal()
@@ -61,7 +59,7 @@ export const App = () => {
       <ImageGallery images={images} openModalImg={openModalImg} />
       {!!totalHits && (!isLoading ? (<LoadMore onLoadMore={handleLoadMore} />) : (<Loader />))}
       {modalShow && (<Modal image={modalImage} tag={modalTags} onClose={toggleModal} />)}
-   
+
     </>
   )
 }
